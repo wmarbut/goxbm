@@ -37,14 +37,13 @@ func Encode(w io.Writer, m image.Image) error {
 	return encoder.Encode(w, m)
 }
 
-func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
+//Get the raw bytes of the image in XBM format
+func ToRawXBMBytes(img image.Image) []byte {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()
 	fullSize := width * height
 
-	strBuf := bytes.NewBufferString("#define xbm_width ") //TODO optimize to know exact size of buffer ahead of time
-	fmt.Fprintf(strBuf, "%d\n", width)
-	fmt.Fprintf(strBuf, "#define xbm_height %d\nstatic unsigned char xbm_bits[] = {", width)
+	bytBuf := bytes.NewBuffer(make([]byte, 0, (fullSize/8)+1))
 
 	var i = 0
 	for y := 0; y < height; y++ { /*Step through each line of the image vertically*/
@@ -53,10 +52,7 @@ func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 			i++
 			bitPos := (x % BYTE_SIZE)
 			if bitPos == 0 && x != 0 {
-				fmt.Fprintf(strBuf, formatByte(curByte))
-				if i != fullSize {
-					fmt.Fprintf(strBuf, ", ")
-				}
+				bytBuf.WriteByte(curByte)
 				curByte = 0
 			}
 			r, g, b, a := img.At(x, y).RGBA()
@@ -64,10 +60,24 @@ func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 				curByte = curByte | PIX_VALUES[bitPos]
 			}
 		}
-		fmt.Fprintf(strBuf, formatByte(curByte))
-		if i != fullSize {
+		bytBuf.WriteByte(curByte)
+	}
+	return bytBuf.Bytes()
+}
+
+//Encode an image in XBM format
+func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
+	width := img.Bounds().Dx()
+	height := img.Bounds().Dy()
+	strBuf := bytes.NewBufferString("#define xbm_width ") //TODO optimize to know exact size of buffer ahead of time
+	fmt.Fprintf(strBuf, "%d\n", width)
+	fmt.Fprintf(strBuf, "#define xbm_height %d\nstatic unsigned char xbm_bits[] = {", height)
+	xbmBytes := ToRawXBMBytes(img)
+	for i, byt := range xbmBytes {
+		if i != 0 {
 			fmt.Fprintf(strBuf, ", ")
 		}
+		fmt.Fprintf(strBuf, formatByte(byt))
 	}
 	fmt.Fprintf(strBuf, "};\n")
 

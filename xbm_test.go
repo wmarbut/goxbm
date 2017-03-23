@@ -4,14 +4,12 @@ import (
 	"bytes"
 	"image"
 	"image/png"
-	"io/ioutil"
-	"os"
 	"testing"
 )
 
 func TestEncodeAgainstKnownValue(t *testing.T) {
-	png := getPngImage()
-	existingXbm := getExistingXbmBytes()
+	png := getPngImage1()
+	existingXbm := getExistingXbmBytes1()
 
 	buf := bytes.NewBuffer([]byte{})
 	err := Encode(buf, png)
@@ -19,26 +17,60 @@ func TestEncodeAgainstKnownValue(t *testing.T) {
 		t.Fatalf("Error encoding xbm: %s", err)
 	}
 	if bytes.Compare(buf.Bytes(), existingXbm) != 0 {
-		t.Error("Byte comparison failed")
+		t.Error("Byte comparison failed on image 1")
+	}
+
+	png = getPngImage2()
+	existingXbm = getExistingXbmBytes2()
+	buf = bytes.NewBuffer([]byte{})
+	err = Encode(buf, png)
+
+	if err != nil {
+		t.Fatalf("Error encoding xbm: %s", err)
+	}
+	if bytes.Compare(buf.Bytes(), existingXbm) != 0 {
+		t.Error("Byte comparison failed on image 2")
 	}
 }
 
-func getExistingXbmBytes() []byte {
-	imgBytes, err := ioutil.ReadFile("test_image.xbm")
+func getExistingXbmBytes1() []byte {
+	imgBytes, err := Asset("test_image.xbm")
 	if err != nil {
 		panic(err)
 	}
 	return imgBytes
 }
 
-func getPngImage() image.Image {
-	imgFile, err := os.Open("test_image.png")
+func getExistingXbmBytes2() []byte {
+	imgBytes, err := Asset("test_image2.xbm")
 	if err != nil {
 		panic(err)
 	}
-	defer imgFile.Close()
+	return imgBytes
+}
 
-	img, err := png.Decode(imgFile)
+func getPngImage1() image.Image {
+	imgBytes, err := Asset("test_image.png")
+	if err != nil {
+		panic(err)
+	}
+	imgReader := bytes.NewReader(imgBytes)
+
+	img, err := png.Decode(imgReader)
+	if err != nil {
+		panic(err)
+	}
+	return img
+}
+
+func getPngImage2() image.Image {
+	imgBytes, err := Asset("test_image2.png")
+	if err != nil {
+		panic(err)
+	}
+	imgReader := bytes.NewReader(imgBytes)
+
+	img, err := png.Decode(imgReader)
 	if err != nil {
 		panic(err)
 	}

@@ -1,0 +1,13 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "MzTCg3kFsi/89bf1wGsGJwIykEM=",
+			"path": "github.com/jteeuwen/go-bindata",
+			"revision": "a0ff2567cfb70903282db057e799fd826784d41d",
+			"revisionTime": "2015-10-23T09:11:02Z"
+		}
+	],
+	"rootPath": "github.com/wmarbut/goxbm"
+}

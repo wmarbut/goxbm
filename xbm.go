@@ -37,7 +37,7 @@ func Encode(w io.Writer, m image.Image) error {
 	return encoder.Encode(w, m)
 }
 
-//Get the raw bytes of the image in XBM format
+//Get the raw bytes of the image in XBM format. Defaults to Big Endian
 func ToRawXBMBytes(img image.Image) []byte {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()
@@ -65,7 +65,7 @@ func ToRawXBMBytes(img image.Image) []byte {
 	return bytBuf.Bytes()
 }
 
-//Encode an image in XBM format
+//Encode an image in XBM format. Defaults to Big Endian
 func (enc *Encoder) Encode(w io.Writer, img image.Image) error {
 	width := img.Bounds().Dx()
 	height := img.Bounds().Dy()

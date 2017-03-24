@@ -1,0 +1,2 @@
+# goxbm [![Travis CI](https://travis-ci.org/wmarbut/goxbm.svg?branch=master)](https://travis-ci.org/wmarbut/goxbm) [![Godoc Reference](https://img.shields.io/badge/Godoc-Reference-blue.svg)](https://godoc.org/github.com/wmarbut/goxbm)
+**goxbm** is a library for exporting golang images to the XBM image format. 
